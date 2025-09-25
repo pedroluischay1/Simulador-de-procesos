@@ -60,67 +60,53 @@ public class SimuladorPlanificacion extends JFrame {
 
         panel.add(panelEntrada, BorderLayout.NORTH);
 
-       // Configuración de las tablas
-// Modelo de la cola de procesos con columnas: PID, Nombre, Tiempo de CPU, Llegada y Quantum Restante
-modeloCola = new DefaultTableModel(new String[]{"PID", "Nombre", "Tiempo CPU", "Llegada", "Quantum Restante"}, 0);
-colaProcesosTable = new JTable(modeloCola);
+       // Tablas
+        modeloCola = new DefaultTableModel(new String[]{"PID", "Nombre", "Tiempo CPU", "Llegada", "Quantum Restante"}, 0);
+        colaProcesosTable = new JTable(modeloCola);
+        modeloHistorial = new DefaultTableModel(new String[]{"PID", "Nombre", "Tiempo Ejecutado"}, 0);
+        historialTable = new JTable(modeloHistorial);
 
-// Modelo del historial de ejecución con columnas: PID, Nombre y Tiempo Ejecutado
-modeloHistorial = new DefaultTableModel(new String[]{"PID", "Nombre", "Tiempo Ejecutado"}, 0);
-historialTable = new JTable(modeloHistorial);
+        JPanel panelCentro = new JPanel(new GridLayout(1,2));
+        panelCentro.add(new JScrollPane(colaProcesosTable));
+        panelCentro.add(new JScrollPane(historialTable));
+        panel.add(panelCentro, BorderLayout.CENTER);
 
-// Panel central que contendrá las dos tablas (cola de procesos e historial)
-JPanel panelCentro = new JPanel(new GridLayout(1,2)); // GridLayout de 1 fila y 2 columnas
-panelCentro.add(new JScrollPane(colaProcesosTable));   // Se añade la tabla de cola con scroll
-panelCentro.add(new JScrollPane(historialTable));      // Se añade la tabla de historial con scroll
-panel.add(panelCentro, BorderLayout.CENTER);           // Se coloca en el centro del panel principal
+        // Panel inferior con botones
+        JPanel panelBotones = new JPanel();
+        panelBotones.setBackground(new Color(245, 245, 245));
 
-// Panel inferior con botones
-JPanel panelBotones = new JPanel();
-panelBotones.setBackground(new Color(245, 245, 245)); // Fondo gris claro
+        btnIniciarSimulacion = new JButton("Iniciar Simulación");
+        btnIniciarSimulacion.setBackground(new Color(60, 179, 113));
+        btnIniciarSimulacion.setForeground(Color.WHITE);
 
-// Botón para iniciar la simulación
-btnIniciarSimulacion = new JButton("Iniciar Simulacion");
-btnIniciarSimulacion.setBackground(new Color(60, 179, 113)); // Verde
-btnIniciarSimulacion.setForeground(Color.WHITE);             // Texto blanco
+        btnLimpiarHistorial = new JButton("Limpiar Historial y Cola");
+        btnLimpiarHistorial.setBackground(new Color(220, 20, 60));
+        btnLimpiarHistorial.setForeground(Color.WHITE);
 
-// Botón para limpiar el historial y la cola
-btnLimpiarHistorial = new JButton("Limpiar Historial y Cola");
-btnLimpiarHistorial.setBackground(new Color(220, 20, 60)); // Rojo
-btnLimpiarHistorial.setForeground(Color.WHITE);            // Texto blanco
+        panelBotones.add(btnIniciarSimulacion);
+        panelBotones.add(btnLimpiarHistorial);
+        panel.add(panelBotones, BorderLayout.SOUTH);
 
-// Se agregan los botones al panel inferior
-panelBotones.add(btnIniciarSimulacion);
-panelBotones.add(btnLimpiarHistorial);
-panel.add(panelBotones, BorderLayout.SOUTH); // Panel de botones se coloca en la parte inferior
+        add(panel);
 
-// Se agrega el panel principal a la ventana
-add(panel);
+        // Eventos
+        algoritmoCombo.addActionListener(e -> {
+            String algoritmo = (String) algoritmoCombo.getSelectedItem();
+            txtQuantum.setEnabled("Round Robin".equals(algoritmo));
+        });
 
-// -------------------- EVENTOS -------------------- //
+        btnAgregarProceso.addActionListener(e -> agregarProceso());
 
-// Evento al seleccionar un algoritmo de planificación en el comboBox
-// Si el algoritmo es "Round Robin", se habilita el campo Quantum; de lo contrario, se deshabilita
-algoritmoCombo.addActionListener(e -> {
-    String algoritmo = (String) algoritmoCombo.getSelectedItem();
-    txtQuantum.setEnabled("Round Robin".equals(algoritmo));
-});
+        btnIniciarSimulacion.addActionListener(e -> iniciarSimulacion());
 
-// Evento al presionar el botón "Agregar Proceso"
-btnAgregarProceso.addActionListener(e -> agregarProceso());
-
-// Evento al presionar el botón "Iniciar Simulación"
-btnIniciarSimulacion.addActionListener(e -> iniciarSimulacion());
-
-// Evento al presionar el botón "Limpiar Historial y Cola"
-btnLimpiarHistorial.addActionListener(e -> {
-    procesos.clear();               // Limpia la lista interna de procesos
-    modeloCola.setRowCount(0);      // Borra todas las filas de la tabla de cola
-    modeloHistorial.setRowCount(0); // Borra todas las filas de la tabla de historial
-    nextPID = 1;                    // Reinicia el contador de PID a 1
-    JOptionPane.showMessageDialog(this, "Historial y cola de procesos limpiados.");
-});
-
+        btnLimpiarHistorial.addActionListener(e -> {
+            procesos.clear();  // Limpia la lista de procesos
+            modeloCola.setRowCount(0); // Limpia la tabla de cola
+            modeloHistorial.setRowCount(0); // Limpia la tabla de historial
+            nextPID = 1; // Reiniciar contador de PID
+            JOptionPane.showMessageDialog(this, "Historial y cola de procesos limpiados.");
+        });
+    }
     private void agregarProceso() {
         try {
             String nombre = txtNombre.getText().trim();
