@@ -1,20 +1,25 @@
+// Importación de librerías necesarias para GUI y estructuras de datos
 import javax.swing.*; 
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+// Clase principal que extiende JFrame para crear la interfaz gráfica
+
 public class SimuladorPlanificacion extends JFrame {
     private JComboBox<String> algoritmoCombo;
     private JButton btnAgregarProceso, btnIniciarSimulacion, btnLimpiarHistorial;
-    private JTextField txtNombre, txtTiempoCPU, txtLlegada, txtQuantum;
+    private JTextField txtNombre, txtTiempoCPU, txtLlegada, txtQuantum;                    // Componentes de la interfaz
     private JTable colaProcesosTable, historialTable;
     private DefaultTableModel modeloCola, modeloHistorial;
     private List<Proceso> procesos;
-    private int nextPID = 1;
+    private int nextPID = 1;       // ID incremental para cada proceso
 
     // Constante para definir la duración de cada unidad de tiempo (5 segundos)
     private static final int TIEMPO_UNIDAD_MS = 5000;
+
+// Constructor: Configura la ventana principal
 
     public SimuladorPlanificacion() {
         setTitle("Simulador de Planificacion de Procesos");
@@ -32,11 +37,12 @@ public class SimuladorPlanificacion extends JFrame {
         panelEntrada.setBorder(BorderFactory.createTitledBorder("Agregar Proceso"));
         panelEntrada.setBackground(new Color(220, 235, 245));
 
+// Constructor: Configura la ventana principal
         txtNombre = new JTextField();
         txtTiempoCPU = new JTextField();
         txtLlegada = new JTextField();
         txtQuantum = new JTextField();
-        txtQuantum.setEnabled(false);
+        txtQuantum.setEnabled(false);  // Solo se habilita para Round Robin
 
         panelEntrada.add(new JLabel("Nombre"));
         panelEntrada.add(new JLabel("Tiempo CPU (unids)"));
@@ -50,6 +56,8 @@ public class SimuladorPlanificacion extends JFrame {
         panelEntrada.add(txtLlegada);
         panelEntrada.add(txtQuantum);
 
+// Selector de algoritmos de planificación
+
         algoritmoCombo = new JComboBox<>(new String[]{"FCFS", "SJF", "SRTF", "Round Robin"});
         panelEntrada.add(algoritmoCombo);
 
@@ -60,10 +68,12 @@ public class SimuladorPlanificacion extends JFrame {
 
         panel.add(panelEntrada, BorderLayout.NORTH);
 
-       // Tablas
+// ----- Tablas de visualización -----
+        // Tabla que muestra la cola de procesos
+
         modeloCola = new DefaultTableModel(new String[]{"PID", "Nombre", "Tiempo CPU", "Llegada", "Quantum Restante"}, 0);
         colaProcesosTable = new JTable(modeloCola);
-        modeloHistorial = new DefaultTableModel(new String[]{"PID", "Nombre", "Tiempo Ejecutado"}, 0);
+        modeloHistorial = new DefaultTableModel(new String[]{"PID", "Nombre", "Tiempo Ejecutado"}, 0);          // Tabla que muestra el historial de procesos finalizados
         historialTable = new JTable(modeloHistorial);
 
         JPanel panelCentro = new JPanel(new GridLayout(1,2));
@@ -71,7 +81,8 @@ public class SimuladorPlanificacion extends JFrame {
         panelCentro.add(new JScrollPane(historialTable));
         panel.add(panelCentro, BorderLayout.CENTER);
 
-        // Panel inferior con botones
+        // ----- Panel de botones para iniciar o limpiar la simulación -----
+
         JPanel panelBotones = new JPanel();
         panelBotones.setBackground(new Color(245, 245, 245));
 
@@ -89,15 +100,18 @@ public class SimuladorPlanificacion extends JFrame {
 
         add(panel);
 
-        // Eventos
+         // Habilitar campo de quantum si se selecciona Round Robin
+
         algoritmoCombo.addActionListener(e -> {
             String algoritmo = (String) algoritmoCombo.getSelectedItem();
             txtQuantum.setEnabled("Round Robin".equals(algoritmo));
         });
 
-        btnAgregarProceso.addActionListener(e -> agregarProceso());
+        btnAgregarProceso.addActionListener(e -> agregarProceso());      // Acción para agregar un nuevo proceso
 
-        btnIniciarSimulacion.addActionListener(e -> iniciarSimulacion());
+        btnIniciarSimulacion.addActionListener(e -> iniciarSimulacion());   // Acción para iniciar la simulación
+
+// Acción para iniciar la simulación
 
         btnLimpiarHistorial.addActionListener(e -> {
             procesos.clear();  // Limpia la lista de procesos
@@ -107,6 +121,9 @@ public class SimuladorPlanificacion extends JFrame {
             JOptionPane.showMessageDialog(this, "Historial y cola de procesos limpiados.");
         });
     }
+
+    // Método para agregar proceso desde los campos de texto
+
     private void agregarProceso() {
         try {
             String nombre = txtNombre.getText().trim();
@@ -116,6 +133,9 @@ public class SimuladorPlanificacion extends JFrame {
             if(txtQuantum.isEnabled()) {
                 quantum = Integer.parseInt(txtQuantum.getText().trim());
             }
+
+// Validaciones de entrada
+
             if(nombre.isEmpty() || tiempoCPU<=0 || instanteLlegada<0 || (txtQuantum.isEnabled() && quantum<=0)) {
                 JOptionPane.showMessageDialog(this, "Ingrese valores válidos");
                 return;
@@ -134,6 +154,8 @@ public class SimuladorPlanificacion extends JFrame {
         }
     }
 
+// Limpia los campos de entrada de texto
+
     private void limpiarCampos() {
         txtNombre.setText("");
         txtTiempoCPU.setText("");
@@ -147,6 +169,7 @@ public class SimuladorPlanificacion extends JFrame {
             modeloCola.addRow(new Object[]{p.pid, p.nombre, p.tiempoCPU, p.instanteLlegada, p.quantumRestante});
         }
     }
+// Inicia la simulación con el algoritmo seleccionado
 
     private void iniciarSimulacion() {
         String algoritmo = (String) algoritmoCombo.getSelectedItem();
@@ -154,8 +177,9 @@ public class SimuladorPlanificacion extends JFrame {
             JOptionPane.showMessageDialog(this, "Agregue al menos un proceso");
             return;
         }
-        procesos.sort(Comparator.comparingInt(p -> p.instanteLlegada));
-        Simulador simulador = new Simulador(procesos, algoritmo);
+// Ordenar procesos por orden de llegada antes de simular
+        procesos.sort(Comparator.comparingInt(p -> p.instanteLlegada));        // Ordenar procesos por orden de llegada antes de simular
+        Simulador simulador = new Simulador(procesos, algoritmo);            // Iniciar el hilo de simulación
         simulador.start();
     }
 
@@ -176,7 +200,12 @@ public class SimuladorPlanificacion extends JFrame {
             List<Proceso> colaListos = new ArrayList<>();
             int quantumRR = 0;
 
+// Mientras haya procesos por ejecutar
+
             while(!colaListos.isEmpty() || !listaProcesos.isEmpty()) {
+
+           // Agregar procesos que ya han llegado a la cola de listos
+
                 Iterator<Proceso> it = listaProcesos.iterator();
                 while(it.hasNext()) {
                     Proceso p = it.next();
@@ -187,31 +216,34 @@ public class SimuladorPlanificacion extends JFrame {
                 }
 
                 if(colaListos.isEmpty()) {
-                    tiempoSistema++;
-                    try { Thread.sleep(TIEMPO_UNIDAD_MS);} catch(Exception ex) {}
-                    continue;
+                    tiempoSistema++;  //Se avanza una unidad de tiempo porque ningún proceso está listo
+                    try { Thread.sleep(TIEMPO_UNIDAD_MS);} catch(Exception ex) {}       // Se simula el paso del tiempo en 5 segundos
+                    continue;  // Volver al inicio del ciclo para seguir esperando
                 }
                 Proceso actual = null;
 
-                switch(algoritmo) {
+                switch(algoritmo) {  // Se elige el algoritmo de planificación seleccionado
                     case "FCFS":
-                        actual = colaListos.get(0);
-                        runProceso(actual, colaListos, historial, actual.tiempoCPU);
-                        tiempoSistema += actual.tiempoCPU;
+                        actual = colaListos.get(0); // Se toma el primer proceso que llegó
+                        runProceso(actual, colaListos, historial, actual.tiempoCPU); // Ejecutar todo el proceso de una vez
+                        tiempoSistema += actual.tiempoCPU;   // Ejecutar todo el proceso de una vez
                         break;
-                    case "SJF":
+
+                    case "SJF":     // Ordenar los procesos por el tiempo de CPU más corto
                         colaListos.sort(Comparator.comparingInt(p -> p.tiempoCPU));
                         actual = colaListos.get(0);
                         runProceso(actual, colaListos, historial, actual.tiempoCPU);
                         tiempoSistema += actual.tiempoCPU;
                         break;
-                    case "SRTF":
+
+                    case "SRTF":  // Ordenar por el tiempo restante (tiempo total - ejecutado) //
                         colaListos.sort(Comparator.comparingInt(p -> p.tiempoCPU - p.tiempoEjecutado));
                         actual = colaListos.get(0);
                         runProceso(actual, colaListos, historial, 1);
                         tiempoSistema++;
                         break;
-                    case "Round Robin":
+
+                    case "Round Robin":  // Calcular cuánto tiempo puede ejecutarse, mínimo entre quantum y lo que le falta//
                         actual = colaListos.get(0);
                         quantumRR = actual.quantumRestante > 0 ? actual.quantumRestante : actual.quantum;
                         int step = Math.min(quantumRR, actual.tiempoCPU - actual.tiempoEjecutado);
@@ -219,7 +251,7 @@ public class SimuladorPlanificacion extends JFrame {
                         tiempoSistema += step;
                         break;
                 }
-                actualizarTablaColaSim(colaListos);
+                actualizarTablaColaSim(colaListos);   // Actualizar las tablas en pantalla después de cada ejecución parcial/completa
                 actualizarTablaHistorial(historial);
             }
 
@@ -227,11 +259,13 @@ public class SimuladorPlanificacion extends JFrame {
             StringBuilder resultado = new StringBuilder("Simulacion finalizada en " + tiempoSistema + " unidades de tiempo.\n\n");
             resultado.append("Tiempos de finalizacion por proceso:\n");
 
+// Mostrar el tiempo de finalización de cada proceso en orden
             for(Proceso p : historial) {
                 resultado.append("PID ").append(p.pid)
                          .append(" (").append(p.nombre).append(") : ")
                          .append(p.tiempoFinalizacion).append(" unidades\n");
             }
+// Mostrar los resultados en una ventana de diálogo
 
             JOptionPane.showMessageDialog(null, resultado.toString());
         }
@@ -239,19 +273,20 @@ public class SimuladorPlanificacion extends JFrame {
         private void runProceso(Proceso p, List<Proceso> cola, List<Proceso> hist, int tiempoEjecutar) {
             for(int i=0;i<tiempoEjecutar;i++) {
                 p.tiempoEjecutado++;
-                if(algoritmo.equals("Round Robin")) {
+                if(algoritmo.equals("Round Robin")) {    // Si es Round Robin, también se descuenta el quantum restante
                     p.quantumRestante--;
                 }
                 try { Thread.sleep(TIEMPO_UNIDAD_MS);} catch(Exception ex) {}
             }
-            if(p.tiempoEjecutado >= p.tiempoCPU) {
-                cola.remove(p);
-                hist.add(p);
+            if(p.tiempoEjecutado >= p.tiempoCPU) {   // Si el proceso ya terminó su ejecución
+                cola.remove(p);  // Se elimina de la cola de listos
+                hist.add(p);   // Se agrega al historial de finalizados
+
                 p.quantumRestante = p.quantum;
                 p.tiempoFinalizacion = tiempoSistema + tiempoEjecutar; // Guardar finalización
-            } else if(algoritmo.equals("Round Robin")) {
+            } else if(algoritmo.equals("Round Robin")) {   // Si aún no termina, pero es Round Robin: reinsertar al final de la cola
                 cola.remove(p);
-                cola.add(p);
+                cola.add(p);  // Reagendar el proceso para próxima ronda
                 p.quantumRestante = p.quantum;
             }
         }
@@ -274,16 +309,18 @@ public class SimuladorPlanificacion extends JFrame {
             });
         }
     }
+// Representa cada proceso a simular
+   private class Proceso {
+    int pid;                   // ID único del proceso
+    String nombre;             // Nombre del proceso
+    int tiempoCPU;             // Tiempo total requerido de CPU
+    int instanteLlegada;       // En qué unidad de tiempo llega
+    int quantum;               // Quantum original (solo si aplica)
+    int quantumRestante;       // Cuánto le queda en su quantum actual
+    int tiempoEjecutado;       // Cuánto ha ejecutado hasta ahora
+    int tiempoFinalizacion = -1; // Tiempo en que finalizó 
 
-    private class Proceso {
-        int pid;
-        String nombre;
-        int tiempoCPU;
-        int instanteLlegada;
-        int quantum;
-        int quantumRestante;
-        int tiempoEjecutado;
-        int tiempoFinalizacion = -1; // Nuevo atributo
+// Constructor para procesos nuevos
 
         public Proceso(int pid, String nombre, int tiempoCPU, int instanteLlegada, int quantum) {
             this.pid = pid;
