@@ -350,4 +350,4 @@ public class SimuladorPlanificacion extends JFrame {
         });
     }
 }
-}
+
