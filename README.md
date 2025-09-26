@@ -37,7 +37,7 @@ La aplicación cuenta con:
 -Java JDK 8 o superior
 -Cualquier IDE compatible con Java (IntelliJ IDEA, Eclipse, NetBeans) o compilación por consola.
 
-# **🚀 Instalación y ejecución**
+### **🚀 Instalación y ejecución**
 
 -Clonar este repositorio o copiar el código fuente.
 -Compilar el archivo SimuladorPlanificacion.java:
