@@ -3,7 +3,7 @@ Este proyecto implementa un simulador gráfico de algoritmos de planificación d
 
 Permite crear procesos con parámetros personalizados (nombre, tiempo de CPU, instante de llegada y quantum en caso de Round Robin) y simular su ejecución con distintos algoritmos de planificación.
 
-# **✨ Características**
+### **✨ Características**
 
 Interfaz gráfica amigable desarrollada con Java Swing.
 
@@ -25,14 +25,14 @@ Visualización en tiempo real de:
 -Simulación de tiempo configurable (en este caso 1 unidad = 5 segundos).
 -Posibilidad de limpiar historial y cola de procesos.
 
-# **🖼️ Interfaz**
+### **🖼️ Interfaz**
 
 La aplicación cuenta con:
 -Panel de entrada: para ingresar datos de nuevos procesos.
 -Tablas: una para la cola de procesos y otra para el historial de finalización.
 -Panel de control: botones para iniciar simulación y limpiar datos.
 
-# **⚙️ Requisitos**
+### **⚙️ Requisitos**
 
 -Java JDK 8 o superior
 -Cualquier IDE compatible con Java (IntelliJ IDEA, Eclipse, NetBeans) o compilación por consola.
@@ -44,7 +44,7 @@ La aplicación cuenta con:
 -javac SimuladorPlanificacion.java
 
 
-# **Ejecutar la aplicación:**
+### **Ejecutar la aplicación:**
 
 -java SimuladorPlanificacion
 -📊 Algoritmos soportados
@@ -61,7 +61,7 @@ La aplicación cuenta con:
 4. Round Robin (RR)
 -Cada proceso recibe un quantum definido. Si no finaliza en ese tiempo, regresa al final de la cola.
 
-# **📝 Uso básico**
+### **📝 Uso básico**
 
 -Ingresar datos de un proceso en el panel de entrada.
 -Seleccionar el algoritmo de planificación.
@@ -70,7 +70,7 @@ La aplicación cuenta con:
 -Pulsar Iniciar Simulación para observar la ejecución.
 -Usar Limpiar Historial y Cola para reiniciar la simulación.
 
-# **📌 Notas**
+### **📌 Notas**
 
 -Cada unidad de tiempo en la simulación equivale a 5 segundos en la vida real.
 -El quantum solo se habilita cuando se selecciona el algoritmo Round Robin.
