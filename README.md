@@ -1,4 +1,4 @@
-📌 Simulador de Planificación de Procesos
+ ## **📌Simulador de Planificación de Procesos**
 Este proyecto implementa un simulador gráfico de algoritmos de planificación de procesos en Java, utilizando Swing para la interfaz gráfica.
 
 Permite crear procesos con parámetros personalizados (nombre, tiempo de CPU, instante de llegada y quantum en caso de Round Robin) y simular su ejecución con distintos algoritmos de planificación.
