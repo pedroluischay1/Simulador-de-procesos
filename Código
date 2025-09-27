@@ -1,4 +1,4 @@
-// Importación de librerías necesarias para GUI y estructuras de datos
+/// Importación de librerías necesarias para GUI y estructuras de datos
 import javax.swing.*; 
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
